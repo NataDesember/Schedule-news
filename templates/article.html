@@ -1,0 +1,13 @@
+{% extends 'flatpages/default.html' %}
+{% load custom_filters %}
+
+{% block title %}
+Article
+{% endblock title %}
+
+{% block content %}
+<h2>{{ article.title|censor }}</h2>
+<font size="-1">{{ article.time_in|date:'d M Y' }}</font>
+<br/><br/>
+{{ article.text|censor }}
+{% endblock content %}

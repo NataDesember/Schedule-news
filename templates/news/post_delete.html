@@ -1,0 +1,37 @@
+{% extends 'flatpages/default.html' %}
+{% load custom_filters %}
+ 
+{% block title %} Post list {% endblock title %}
+ 
+{% block content %}
+<h2>Вы действительно хотите удалить данную новость (статью)?</h2>
+<table>
+    <thead>
+        <th> Author </th>
+        <th> Title </th>
+        <th> Text </th>
+        <th> Categorys </th>
+    </thead>
+    <tr>
+        <td>
+            {{ post.author|title }}
+        </td>
+        <td>
+            {{ post.title|title }}
+        </td>
+        <td>
+            {{ post.text }}
+        </td>
+        <td>
+            {% for category in post.categorys.all %}
+                {{ category }}
+            {% endfor %}
+
+        </td>
+    </tr>
+</table>
+ 
+<form method="POST">
+    {% csrf_token %}
+    <input type="submit" value="подтвердить"></form>
+{% endblock content %} 

@@ -1,0 +1,29 @@
+{% extends 'flatpages/default.html' %}
+{% load custom_filters %}
+
+{% block title %}
+Found news
+{% endblock title %}
+
+{% block content %}
+   {% if found %}
+       <table>
+           <tr>
+               <td>заголовок</td>
+               <td>дата публикации</td>
+               <td>text</td>
+            </tr>
+
+           {% for article in found %}
+           <tr>
+               <td><a href="./{{ article.id }}">{{ article.title|censor }}</a></td>
+               <td>{{ article.time_in|date:'d M Y' }}</td>
+               <td>{{ article.text|censor }}</td>
+
+           </tr>
+           {% endfor %}
+       </table>
+   {% else %}
+       <h2>ничего нет!</h2>
+   {% endif %}
+{% endblock content %}

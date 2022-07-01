@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Email from job</title>
+</head>
+<body>
+Здравствуй, {{ first_name }} {{ last_name }}. Новая статья за неделю в твоём любимом разделе {{ category }}!
+{{ post.title }} <br/>
+{{ post.text }}
+<a href="{% url 'post_detail' post.id %}">View</a>
+</body>
+</html>

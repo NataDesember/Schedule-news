@@ -1,0 +1,91 @@
+{% extends 'flatpages/default.html' %}
+
+{% load custom_filters %}
+{% load static %}
+{% load my_templatetags %}
+
+
+{% block title %}
+News
+{% endblock title %}
+
+{% block content %}
+<div align="right">Hello, {{request.user.username}}! <button> <a href="logout/">Выйти</a> </button></div>
+<div align="right">
+    <form action="search" method="get">
+    Search (old style): <input name="q" type="text"><input type="submit" value="Go!">
+    </form>
+</div>
+
+<form method="GET">
+    {{ filter.form }} <!-- Форму от фильтров за нас сделает Django. А вот кнопку, увы придётся делать самому -->
+    <input type="submit" value="Найти">
+</form>
+
+
+<h1>Все новости</h1>
+   {% if filter %}
+       <table>
+           <tr>
+               <td>заголовок</td>
+               <td>дата публикации</td>
+               <td>текст</td>
+               <td>автор</td>
+               <td>категория</td>
+            </tr>
+
+           {% for article in page %}
+           <tr>
+               <td><a href="./{{ article.id }}">{{ article.title|censor }}</a></td>
+               <td>{{ article.time_in|date:'d M Y' }}</td>
+               <td>{{ article.text|censor }}</td>
+               <td>{{ article.author.full_name }}</td>
+               <td>
+                   {% for category in article.categorys.all %}
+                    {{ category }} &nbsp;
+                   {% endfor %}
+               </td>
+               <td>
+                    <a href="{% url 'post_detail' article.id %}">View</a>
+                   {% if is_author %}
+                    <a href="{% url 'post_update' article.id %}">Edit</a>
+                    <a href="{% url 'post_delete' article.id %}">Delete</a>
+                   {% endif %}
+               </td>
+
+           </tr>
+           {% endfor %}
+       </table>
+
+        {% if is_author %}
+        <a href="{% url 'post_create' %}">Добавить новую статью</a> <br>
+        {% else %}
+        <a href="{% url 'post_author' %}">Wanna to be author</a> <br>
+        {% endif %}
+{% if page_obj.paginator.num_pages > 1 %}
+    <!-- Если доступна предыдущая страница, то даём ссылку на неё и самую первую страницу -->
+    {% if page_obj.has_previous %}
+        <a href="?{% query_transform request page=1 %}">&laquo; First</a>&nbsp;
+        <a href="?{% query_transform request page=page_obj.previous_page_number %}">&laquo;</a>&nbsp;
+    {% endif %}
+
+    <!-- Показываем только текущую страницу и ближайшие к ней, чтобы список не тянулся и не захламлял страницу -->
+    {% for num in page_obj.paginator.page_range %}
+        {% if page_obj.number == num %}
+            <span>{{ num }} of {{ page_obj.paginator.num_pages }}&nbsp;</span>
+        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+            <a href="?{% query_transform request page=num %}">{{ num }}</a>&nbsp;
+        {% endif %}
+    {% endfor %}
+
+    <!-- Если есть следующая страница, то даём ссылку на неё и на самую последнюю страницу -->
+    {% if page_obj.has_next %}
+        <a href="?{% query_transform request page=page_obj.next_page_number %}">&raquo;</a>&nbsp;
+        <a href="?{% query_transform request page=page_obj.paginator.num_pages %}">Last &raquo;</a>&nbsp;
+    {% endif %}
+{% endif %}
+
+{% else %}
+    <h2>ничего нет!</h2>
+{% endif %}
+{% endblock content %}
